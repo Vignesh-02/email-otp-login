@@ -51,11 +51,11 @@ For sending mail as your company name,
 in the process.env.SENDER_EMAIL= ABC_Company company_emailaddres@in
 
 1.get otp
-POST https://otp-based-login-ran6.onrender.com/getOTP
+POST https://email-otp-login.onrender.com/getOTP
 Requires 1 field in the body - "email"
 
 2.login
-POST https://otp-based-login-ran6.onrender.com/login
+POST https://email-otp-login.onrender.com/login
 Requires 2 fields in the body - "email" and "otp"
 
 
