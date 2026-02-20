@@ -13,15 +13,12 @@ const generateOTP = async (email) => {
 
 if (timeElapsed >= 60000) {
     const otp = Math.floor(1000 + Math.random() * 9000)
-    console.log(otp)
 
     const saltRounds = 10
 
     const hashedOTP = await bcrypt.hash(`${otp}`, saltRounds)
     const id = value ? value._id : null
-    console.log(id)
     if(id){
-        console.log('henlo')
         const updateOTP = await  OtpVerification.findByIdAndUpdate(id, {
             otp: hashedOTP ,
             used: false,
@@ -29,7 +26,6 @@ if (timeElapsed >= 60000) {
             expiresAt: Date.now() + 300000,
             lastOTPGenerationTime: Date.now()
         }, { new: false })
-        console.log(updateOTP)
     }
     else{
 
@@ -45,7 +41,7 @@ if (timeElapsed >= 60000) {
     }
 
     const { error: mailError } = await resend.emails.send({
-        from: process.env.SENDER_MAIL_ID,
+        from: `My Company <${process.env.SENDER_MAIL_ID}>`,
         to: email,
         subject: 'otp',
         text: `Your otp for secure login is ${otp}. The otp expires in 5 minutes`
@@ -92,7 +88,6 @@ const loginUsingOTP = async (req,res) => {
         res.status(400).json({error: "Please enter both email and otp "})
     }
     const otpVerificationRecord = await OtpVerification.findOne({ email })
-    console.log(otpVerificationRecord)
     if(!otpVerificationRecord){
         return res.status(400).json({ error: "This account does not exist or has been verified. Try again "})
     }
