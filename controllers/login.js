@@ -20,14 +20,14 @@ if (timeElapsed >= 60000) {
     const hashedOTP = await bcrypt.hash(`${otp}`, saltRounds)
     const id = value ? value._id : null
     if(id){
-        const updateOTP = await  OtpVerification.findByIdAndUpdate(id, {
+        await  OtpVerification.findByIdAndUpdate(id, {
             otp: hashedOTP ,
             used: false,
             expiresAt: Date.now() + 300000,
             lastOTPGenerationTime: Date.now(),
             consecutiveWrongAttempts: 0,
             blockedUntil: null
-        }, { new: false })
+        })
     }
     else{
 
@@ -99,6 +99,7 @@ const loginUsingOTP = async (req,res) => {
         if (blockedUntil && blockedUntil > Date.now()) {
             const timeRemaining = blockedUntil - Date.now();
             const minutesRemaining = Math.ceil(timeRemaining / (60 * 1000));
+            // gives you the exact minutes remaining as a decimal eg21.3 -> 2(due to Math.ceil)
             return res.status(400).json({ error:`Your account is blocked. Please try again after ${minutesRemaining} minutes.`})
         }
 
