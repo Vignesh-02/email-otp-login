@@ -4,6 +4,7 @@ const express = require('express')
 const app = express()
 const loginRoutes = require('./routes/login')
 const connectDB = require('./db/connectDB')
+app.set('trust proxy', 1)
 app.use(express.json());
 
 

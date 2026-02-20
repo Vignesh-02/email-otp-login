@@ -24,12 +24,27 @@ A Node.js REST API that authenticates users via a one-time password (OTP) sent t
 ## How the OTP is Created
 
 1. **Generation** — A random 4-digit number (1000–9999) is generated using `Math.random()`.
-2. **Hashing** — The OTP is hashed with **bcrypt** (10 salt rounds) before being stored in MongoDB, so the plain OTP is never saved to the database.
+2. **Hashing** — The OTP is hashed with **bcryptjs** (10 salt rounds) before being stored in MongoDB, so the plain OTP is never saved to the database.
 3. **Expiry** — Each OTP expires after **5 minutes**.
 4. **Rate limiting** — A new OTP can only be requested once every **60 seconds** per email address.
 5. **Verification** — On login, the submitted OTP is compared against the stored hash using `bcrypt.compare()`.
 6. **One-time use** — Once used successfully, the OTP is marked as used and cannot be reused.
 7. **Lockout** — After **5 consecutive wrong attempts**, the account is blocked for **1 hour**.
+
+---
+
+## Security
+
+| Mechanism | Detail |
+|-----------|--------|
+| OTP hashing | bcryptjs, 10 salt rounds — plain OTP never stored |
+| OTP expiry | 5 minutes from generation |
+| Per-email rate limit | One OTP request per email per 60 seconds |
+| IP rate limit (`/getOTP`) | 5 requests per 15 minutes per IP |
+| IP rate limit (`/login`) | 10 requests per 15 minutes per IP |
+| One-time use | OTP is marked `used` immediately after successful login |
+| Brute force protection | Account locked for 1 hour after 5 wrong attempts |
+| JWT signing | HS256 with a minimum 256-bit secret |
 
 ---
 
@@ -84,4 +99,13 @@ npm run testEmail your_test_email@gmail.com
 
 # Test via Nodemailer (Gmail SMTP)
 npm run testEmailTransporter your_test_email@gmail.com
+```
+
+---
+
+## Running Locally
+
+```bash
+npm install
+npm run dev
 ```

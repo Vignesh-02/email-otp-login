@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const jwt = require('jsonwebtoken')
 
 const otpVerificationSchema = new mongoose.Schema({
     email: {
@@ -15,6 +14,10 @@ const otpVerificationSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    expiresAt: {
+        type: Date,
+        default: null
+    },
     lastOTPGenerationTime: {
         type: Date,
         default: null
@@ -23,10 +26,6 @@ const otpVerificationSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    verified: {
-        type: Boolean,
-        default: false
-    },
     blockedUntil: {
         type: Date,
         default: null
@@ -34,10 +33,5 @@ const otpVerificationSchema = new mongoose.Schema({
 
 })
 
-otpVerificationSchema.methods.createJWT =async function(){
-    return await jwt.sign({ userId: this._id, email: this.email },
-        process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFETIME })
-
-}
 
 module.exports = mongoose.model('OTPVerification', otpVerificationSchema)
