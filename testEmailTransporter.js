@@ -1,5 +1,4 @@
 require('dotenv').config()
-const nodemailer = require('nodemailer')
 
 const toEmail = process.argv[2]
 
@@ -8,31 +7,35 @@ if (!toEmail) {
     process.exit(1)
 }
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.SENDER_MAIL_ID,
-        pass: process.env.GMAIL_PASSWORD
-    }
-})
+async function sendTestEmail() {
+    const { default: nodemailer } = await import('nodemailer')
 
-const mailOptions = {
-    from: process.env.SENDER_MAIL_ID,
-    to: toEmail,
-    subject: 'Test Email',
-    text: 'This is a test email sent via nodemailer transporter.'
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.SENDER_MAIL_ID,
+            pass: process.env.GMAIL_PASSWORD
+        }
+    })
+
+    const mailOptions = {
+        from: process.env.SENDER_MAIL_ID,
+        to: toEmail,
+        subject: 'Test Email',
+        text: 'This is a test email sent via nodemailer transporter.'
+    }
+
+    try {
+        const info = await transporter.sendMail(mailOptions)
+        console.log('Email sent successfully:', info.response)
+    } catch (error) {
+        console.error('Failed to send email:', error)
+    }
 }
 
-transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-        console.error('Failed to send email:', error)
-    } else {
-        console.log('Email sent successfully:', info.response)
-    }
-})
+sendTestEmail()
 
 
 
 // node testEmailTransporter.js someone@example.com
 // email gets sent to someone@example.com
-
